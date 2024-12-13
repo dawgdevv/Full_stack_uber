@@ -4,7 +4,7 @@ A full-stack ride-hailing application with separate frontend and backend compone
 
 ## Project Structure
 
-```
+```plaintext
 ├── uber_frontend/     # React frontend application
 └── uber_backend/      # Express.js backend API
 ```
@@ -13,14 +13,14 @@ A full-stack ride-hailing application with separate frontend and backend compone
 
 React application built with Vite
 
-### Tech Stack
+### Frontend Tech Stack
 
 - React 18.3
 - Vite 6.0
 - ESLint
 - CSS Modules
 
-### Setup & Installation
+### Frontend Installation Steps
 
 1. Navigate to frontend directory:
 
@@ -28,19 +28,19 @@ React application built with Vite
 cd uber_frontend
 ```
 
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Run development server:
+1. Run development server:
 
 ```bash
 npm run dev
 ```
 
-4. Build for production:
+1. Build for production:
 
 ```bash
 npm run build
@@ -84,7 +84,7 @@ Express.js REST API with MongoDB
 - GET `/captains/profile` - Get captain profile
 - GET `/captains/logout` - Captain logout
 
-### Setup & Installation
+### Backend Installation Steps
 
 1. Navigate to backend directory:
 
@@ -92,21 +92,21 @@ Express.js REST API with MongoDB
 cd uber_backend
 ```
 
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Create `.env` file with following variables:
+1. Create `.env` file with following variables:
 
-```
+```plaintext
 PORT=3000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 ```
 
-4. Run development server:
+1. Run development server:
 
 ```bash
 npm run dev
@@ -145,30 +145,34 @@ npm run dev
 - CORS enabled
 - Cookie-based authentication
 
-## Development
+## Development Workflow
 
-### Frontend Development
+### Frontend Development Setup
 
 ```bash
 cd uber_frontend
 npm run dev
 ```
 
-### Backend Development
+### Backend Development Setup
 
 ```bash
 cd uber_backend
 npm run dev
 ```
 
-## API Documentation
+## API Reference
 
 Detailed API documentation available in [uber_backend/README.md](uber_backend/README.md)
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+1. Create your feature branch
+1. Commit your changes
+1. Push to the branch
+1. Create a Pull Request
+
+## License
+
+ISC
