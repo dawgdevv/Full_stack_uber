@@ -28,19 +28,19 @@ React application built with Vite
 cd uber_frontend
 ```
 
-1. Install dependencies:
+2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-1. Run development server:
+3. Run development server:
 
 ```bash
 npm run dev
 ```
 
-1. Build for production:
+4. Build for production:
 
 ```bash
 npm run build
@@ -92,13 +92,13 @@ Express.js REST API with MongoDB
 cd uber_backend
 ```
 
-1. Install dependencies:
+2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-1. Create `.env` file with following variables:
+3. Create `.env` file with following variables:
 
 ```plaintext
 PORT=3000
@@ -106,7 +106,7 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 ```
 
-1. Run development server:
+4. Run development server:
 
 ```bash
 npm run dev
