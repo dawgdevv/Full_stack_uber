@@ -61,10 +61,11 @@ export async function userprofile(req, res, next) {
 }
 
 export async function logout(req, res, next) {
-  res.clearCookie("token");
-
-  const token = req.cookies.token || req.header.authorization.split(" ")[1];
-
+  const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
   await BlacklistToken.create({ token });
+  res.clearCookie("token");
   res.status(200).json({ message: "Logged out" });
 }
