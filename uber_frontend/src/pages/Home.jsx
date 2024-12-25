@@ -5,7 +5,14 @@ import UberHome from "../assets/Uber.home.png";
 import UberMap from "../assets/Uber.map.webp";
 
 function Home() {
-  const [set, setstate] = useState(false);
+  const [pickup, setpickup] = useState("");
+  const [destination, setdestination] = useState("");
+  const [isDivisible, setIsDivisible] = useState(false);
+
+  const toggleDivisible = () => {
+    setIsDivisible(!isDivisible);
+  };
+
   return (
     <div className="h-screen  relative">
       <img className="w-20 absolute left-5 top-5" src={UberHome}></img>
@@ -24,18 +31,30 @@ function Home() {
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="line absolute h-16 w-1 top-[35%] bg-gray-900 rounded-full"></div>
             <input
-              className="bg-[#eee] px-12 py-2 text-base rounded-lg w-full mt-5"
+              value={pickup}
+              onChange={(e) => setpickup(e.target.value)}
+              className="bg-[#eee] px-8 py-2 text-base rounded-lg w-full mt-5"
               type="text"
               placeholder="Enter your location"
             />
             <input
-              className="bg-[#eee] px-12 py-2 text-base rounded-lg w-full mt-3"
+              value={destination}
+              onChange={(e) => setdestination(e.target.value)}
+              className="bg-[#eee] px-8 py-2 text-base rounded-lg w-full mt-3"
               type="text"
               placeholder="Enter your destination"
             />
+            <button
+              onClick={toggleDivisible}
+              className="bg-black text-white px-3 py-2 rounded-lg w-full mt-3"
+            >
+              Find a Trip
+            </button>
           </form>
         </div>
-        <div className="h-[70%] bg-red-500 hidden  "></div>
+        <div
+          className={`h-[70%] bg-red-500 ${isDivisible ? "block" : "hidden"}`}
+        ></div>
       </div>
     </div>
   );
