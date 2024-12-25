@@ -5,8 +5,7 @@ import UberHome from "../assets/Uber.home.png";
 import UberMap from "../assets/Uber.map.webp";
 
 function Home() {
-
-  const
+  const [set, setstate] = useState(false);
   return (
     <div className="h-screen  relative">
       <img className="w-20 absolute left-5 top-5" src={UberHome}></img>
