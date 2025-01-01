@@ -1,147 +1,293 @@
-import { useEffect, useState, useRef } from "react";
-import { gsap } from "gsap";
-import Logout from "../pages/Logout.jsx";
-import UberHome from "../assets/Uber.home.png";
-import UberMap from "../assets/Uber.map.webp";
-import UberCar from "../assets/Uber.car.png";
-import UberBike from "../assets/Uber.Bike.webp";
-import AutoImage from "../assets/Uber.Auto.webp";
-import LocationSearch from "../Components/LocationSearchPanel.jsx";
-import { FaArrowDownUpAcrossLine } from "react-icons/fa6";
-import { FaUser } from "react-icons/fa";
+import React, { useEffect, useRef, useState } from 'react'
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import axios from 'axios';
+import 'remixicon/fonts/remixicon.css'
+import LocationSearchPanel from '../components/LocationSearchPanel';
+import VehiclePanel from '../components/VehiclePanel';
+import ConfirmRide from '../components/ConfirmRide';
+import LookingForDriver from '../components/LookingForDriver';
+import WaitingForDriver from '../components/WaitingForDriver';
+import { SocketContext } from '../context/SocketContext';
+import { useContext } from 'react';
+import { UserDataContext } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
+import LiveTracking from '../components/LiveTracking';
 
-function Home() {
-  const [pickup, setpickup] = useState("");
-  const [destination, setdestination] = useState("");
-  const [isvisible, setIsvisible] = useState(false);
-  const panelRef = useRef(null);
+const Home = () => {
+    const [ pickup, setPickup ] = useState('')
+    const [ destination, setDestination ] = useState('')
+    const [ panelOpen, setPanelOpen ] = useState(false)
+    const vehiclePanelRef = useRef(null)
+    const confirmRidePanelRef = useRef(null)
+    const vehicleFoundRef = useRef(null)
+    const waitingForDriverRef = useRef(null)
+    const panelRef = useRef(null)
+    const panelCloseRef = useRef(null)
+    const [ vehiclePanel, setVehiclePanel ] = useState(false)
+    const [ confirmRidePanel, setConfirmRidePanel ] = useState(false)
+    const [ vehicleFound, setVehicleFound ] = useState(false)
+    const [ waitingForDriver, setWaitingForDriver ] = useState(false)
+    const [ pickupSuggestions, setPickupSuggestions ] = useState([])
+    const [ destinationSuggestions, setDestinationSuggestions ] = useState([])
+    const [ activeField, setActiveField ] = useState(null)
+    const [ fare, setFare ] = useState({})
+    const [ vehicleType, setVehicleType ] = useState(null)
+    const [ ride, setRide ] = useState(null)
 
-  const togglevisible = () => {
-    setIsvisible(!isvisible);
-  };
+    const navigate = useNavigate()
 
-  useEffect(() => {
-    gsap.to(panelRef.current, {
-      height: isvisible ? "70%" : "0%",
-      duration: 0.5,
-      ease: "power2.inOut",
-    });
-  }, [isvisible]);
+    const { socket } = useContext(SocketContext)
+    const { user } = useContext(UserDataContext)
 
-  return (
-    <div className="h-screen relative overflow-hidden">
-      <img
-        className="w-20 absolute left-5 top-5"
-        src={UberHome}
-        alt="Uber Home"
-      />
-      <Logout />
-      <div className="h-screen w-screen">
-        <img
-          src={UberMap}
-          alt="Uber Map"
-          className="h-full w-full object-cover"
-        />
-      </div>
+    useEffect(() => {
+        socket.emit("join", { userType: "user", userId: user._id })
+    }, [ user ])
 
-      <div className="flex flex-col justify-end h-screen absolute top-0 w-full">
-        <div className="h-[30%] p-5 bg-white relative">
-          <button onClick={togglevisible}>
-            <FaArrowDownUpAcrossLine />
-          </button>
-          <h4 className="text-2xl font-semibold">Find a Trip?</h4>
-          <form onSubmit={(e) => e.preventDefault()}>
-            <input
-              value={pickup}
-              onChange={(e) => setpickup(e.target.value)}
-              className="bg-[#eee] px-8 py-2 text-base rounded-lg w-full mt-5"
-              type="text"
-              placeholder="Enter your location"
-            />
-            <input
-              value={destination}
-              onChange={(e) => setdestination(e.target.value)}
-              className="bg-[#eee] px-8 py-2 text-base rounded-lg w-full mt-3"
-              type="text"
-              placeholder="Enter your destination"
-            />
-          </form>
-        </div>
-        <div ref={panelRef} className="bg-white overflow-hidden">
-          <LocationSearch />
-        </div>
-      </div>
+    socket.on('ride-confirmed', ride => {
 
-      <div className="fixed bottom-0 w-full bg-white shadow-lg max-h-[60vh] overflow-y-auto">
-        <h3 className="text-2xl font-bold mt-3 ml-2 text-black">
-          Select a Ride
-        </h3>
-        <div className="p-4 space-y-4">
-          {/* UberGo Card */}
-          <div className="border-2 active:border-black bg-gray-100  flex items-center justify-between p-3 bg-white rounded-lg">
-            <img
-              src={UberCar}
-              alt="Uber Car"
-              className="w-20 mr-4 rounded-full border border-black"
-            />
-            <div className="flex flex-col items-center justify-center flex-grow text-center">
-              <h4 className="text-lg font-semibold flex items-center justify-center w-full">
-                UberGo
-                <span className="ml-2 flex items-center">
-                  <FaUser className="mr-1" /> 4
-                </span>
-              </h4>
-              <h5 className="text-black font-semibold">2 min away</h5>
-              <p className="text-sm text-gray-600">Affordable, Compact ride</p>
+
+        setVehicleFound(false)
+        setWaitingForDriver(true)
+        setRide(ride)
+    })
+
+    socket.on('ride-started', ride => {
+        console.log("ride")
+        setWaitingForDriver(false)
+        navigate('/riding', { state: { ride } }) // Updated navigate to include ride data
+    })
+
+
+    const handlePickupChange = async (e) => {
+        setPickup(e.target.value)
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+                params: { input: e.target.value },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+
+            })
+            setPickupSuggestions(response.data)
+        } catch {
+            // handle error
+        }
+    }
+
+    const handleDestinationChange = async (e) => {
+        setDestination(e.target.value)
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+                params: { input: e.target.value },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            setDestinationSuggestions(response.data)
+        } catch {
+            // handle error
+        }
+    }
+
+    const submitHandler = (e) => {
+        e.preventDefault()
+    }
+
+    useGSAP(function () {
+        if (panelOpen) {
+            gsap.to(panelRef.current, {
+                height: '70%',
+                padding: 24
+                // opacity:1
+            })
+            gsap.to(panelCloseRef.current, {
+                opacity: 1
+            })
+        } else {
+            gsap.to(panelRef.current, {
+                height: '0%',
+                padding: 0
+                // opacity:0
+            })
+            gsap.to(panelCloseRef.current, {
+                opacity: 0
+            })
+        }
+    }, [ panelOpen ])
+
+
+    useGSAP(function () {
+        if (vehiclePanel) {
+            gsap.to(vehiclePanelRef.current, {
+                transform: 'translateY(0)'
+            })
+        } else {
+            gsap.to(vehiclePanelRef.current, {
+                transform: 'translateY(100%)'
+            })
+        }
+    }, [ vehiclePanel ])
+
+    useGSAP(function () {
+        if (confirmRidePanel) {
+            gsap.to(confirmRidePanelRef.current, {
+                transform: 'translateY(0)'
+            })
+        } else {
+            gsap.to(confirmRidePanelRef.current, {
+                transform: 'translateY(100%)'
+            })
+        }
+    }, [ confirmRidePanel ])
+
+    useGSAP(function () {
+        if (vehicleFound) {
+            gsap.to(vehicleFoundRef.current, {
+                transform: 'translateY(0)'
+            })
+        } else {
+            gsap.to(vehicleFoundRef.current, {
+                transform: 'translateY(100%)'
+            })
+        }
+    }, [ vehicleFound ])
+
+    useGSAP(function () {
+        if (waitingForDriver) {
+            gsap.to(waitingForDriverRef.current, {
+                transform: 'translateY(0)'
+            })
+        } else {
+            gsap.to(waitingForDriverRef.current, {
+                transform: 'translateY(100%)'
+            })
+        }
+    }, [ waitingForDriver ])
+
+
+    async function findTrip() {
+        setVehiclePanel(true)
+        setPanelOpen(false)
+
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
+            params: { pickup, destination },
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+
+
+        setFare(response.data)
+
+
+    }
+
+    async function createRide() {
+        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
+            pickup,
+            destination,
+            vehicleType
+        }, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+
+
+    }
+
+    return (
+        <div className='h-screen relative overflow-hidden'>
+            <img className='w-16 absolute left-5 top-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
+            <div className='h-screen w-screen'>
+                {/* image for temporary use  */}
+                <LiveTracking />
             </div>
-            <p className="text-lg font-semibold">₹192.56</p>
-          </div>
-
-          {/* UberAuto Card */}
-          <div className="border-2 active:border-black bg-gray-100 flex items-center justify-between p-3 bg-white rounded-lg">
-            <img
-              src={AutoImage}
-              alt="Auto"
-              className="w-20 mr-4 rounded-full border border-black"
-            />
-            <div className="flex flex-col items-center justify-center flex-grow text-center">
-              <h4 className="text-lg font-semibold flex items-center justify-center w-full">
-                UberAuto
-                <span className="ml-2 flex items-center">
-                  <FaUser className="mr-1" /> 3
-                </span>
-              </h4>
-              <h5 className="text-black font-semibold">4 min away</h5>
-              <p className="text-sm text-gray-600">
-                Affordable, Convenient ride
-              </p>
+            <div className=' flex flex-col justify-end h-screen absolute top-0 w-full'>
+                <div className='h-[30%] p-6 bg-white relative'>
+                    <h5 ref={panelCloseRef} onClick={() => {
+                        setPanelOpen(false)
+                    }} className='absolute opacity-0 right-6 top-6 text-2xl'>
+                        <i className="ri-arrow-down-wide-line"></i>
+                    </h5>
+                    <h4 className='text-2xl font-semibold'>Find a trip</h4>
+                    <form className='relative py-3' onSubmit={(e) => {
+                        submitHandler(e)
+                    }}>
+                        <div className="line absolute h-16 w-1 top-[50%] -translate-y-1/2 left-5 bg-gray-700 rounded-full"></div>
+                        <input
+                            onClick={() => {
+                                setPanelOpen(true)
+                                setActiveField('pickup')
+                            }}
+                            value={pickup}
+                            onChange={handlePickupChange}
+                            className='bg-[#eee] px-12 py-2 text-lg rounded-lg w-full'
+                            type="text"
+                            placeholder='Add a pick-up location'
+                        />
+                        <input
+                            onClick={() => {
+                                setPanelOpen(true)
+                                setActiveField('destination')
+                            }}
+                            value={destination}
+                            onChange={handleDestinationChange}
+                            className='bg-[#eee] px-12 py-2 text-lg rounded-lg w-full  mt-3'
+                            type="text"
+                            placeholder='Enter your destination' />
+                    </form>
+                    <button
+                        onClick={findTrip}
+                        className='bg-black text-white px-4 py-2 rounded-lg mt-3 w-full'>
+                        Find Trip
+                    </button>
+                </div>
+                <div ref={panelRef} className='bg-white h-0'>
+                    <LocationSearchPanel
+                        suggestions={activeField === 'pickup' ? pickupSuggestions : destinationSuggestions}
+                        setPanelOpen={setPanelOpen}
+                        setVehiclePanel={setVehiclePanel}
+                        setPickup={setPickup}
+                        setDestination={setDestination}
+                        activeField={activeField}
+                    />
+                </div>
             </div>
-            <p className="text-lg font-semibold">₹70.00</p>
-          </div>
-
-          {/* UberBike Card */}
-          <div className="border-2 active:border-black bg-gray-100 flex items-center justify-between p-3 bg-white rounded-lg">
-            <img
-              src={UberBike}
-              alt="Bike"
-              className="w-20 mr-4 rounded-full border border-black"
-            />
-            <div className="flex flex-col items-center justify-center flex-grow text-center">
-              <h4 className="text-lg font-semibold flex items-center justify-center w-full">
-                UberBike
-                <span className="ml-2 flex items-center">
-                  <FaUser className="mr-1" /> 1
-                </span>
-              </h4>
-              <h5 className="text-black font-semibold">3 min away</h5>
-              <p className="text-sm text-gray-600">Affordable, Quick ride</p>
+            <div ref={vehiclePanelRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12'>
+                <VehiclePanel
+                    selectVehicle={setVehicleType}
+                    fare={fare} setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
             </div>
-            <p className="text-lg font-semibold">₹50.00</p>
-          </div>
+            <div ref={confirmRidePanelRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12'>
+                <ConfirmRide
+                    createRide={createRide}
+                    pickup={pickup}
+                    destination={destination}
+                    fare={fare}
+                    vehicleType={vehicleType}
+
+                    setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
+            </div>
+            <div ref={vehicleFoundRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12'>
+                <LookingForDriver
+                    createRide={createRide}
+                    pickup={pickup}
+                    destination={destination}
+                    fare={fare}
+                    vehicleType={vehicleType}
+                    setVehicleFound={setVehicleFound} />
+            </div>
+            <div ref={waitingForDriverRef} className='fixed w-full  z-10 bottom-0  bg-white px-3 py-6 pt-12'>
+                <WaitingForDriver
+                    ride={ride}
+                    setVehicleFound={setVehicleFound}
+                    setWaitingForDriver={setWaitingForDriver}
+                    waitingForDriver={waitingForDriver} />
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    )
 }
 
-export default Home;
+export default Home
