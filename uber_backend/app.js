@@ -15,8 +15,9 @@ const app = express();
 connecToDb();
 const corsOptions = {
   origin: [
-    "http://localhost:5173",
-    "https://gnpnxv54-5173.inc1.devtunnels.ms/",
+    "http://localhost:5173", // Local development
+    "https://your-frontend-domain.vercel.app", // Replace with your Vercel frontend domain
+    "https://uberbackend-7b382822789e.herokuapp.com", // Heroku backend domain
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
