@@ -1,69 +1,53 @@
-import React, { useState, useEffect } from 'react'
-import { LoadScript, GoogleMap, Marker } from '@react-google-maps/api'
+import { useState, useEffect } from "react";
+import { LoadScript, GoogleMap, Marker } from "@react-google-maps/api";
 
 const containerStyle = {
-    width: '100%',
-    height: '100%',
+  width: "100%",
+  height: "100%",
 };
 
 const center = {
-    lat: -3.745,
-    lng: -38.523
+  lat: -3.745,
+  lng: -38.523,
 };
 
 const LiveTracking = () => {
-    const [ currentPosition, setCurrentPosition ] = useState(center);
+  const [currentPosition, setCurrentPosition] = useState(center);
 
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition((position) => {
-            const { latitude, longitude } = position.coords;
-            setCurrentPosition({
-                lat: latitude,
-                lng: longitude
-            });
-        });
+  useEffect(() => {
+    const successCallback = (position) => {
+      const { latitude, longitude } = position.coords;
+      setCurrentPosition({
+        lat: latitude,
+        lng: longitude,
+      });
+    };
 
-        const watchId = navigator.geolocation.watchPosition((position) => {
-            const { latitude, longitude } = position.coords;
-            setCurrentPosition({
-                lat: latitude,
-                lng: longitude
-            });
-        });
+    const errorCallback = (error) => {
+      console.error("Error getting geolocation: ", error);
+    };
 
-        return () => navigator.geolocation.clearWatch(watchId);
-    }, []);
+    navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
 
-    useEffect(() => {
-        const updatePosition = () => {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const { latitude, longitude } = position.coords;
+    const watchId = navigator.geolocation.watchPosition(
+      successCallback,
+      errorCallback
+    );
 
-                console.log('Position updated:', latitude, longitude);
-                setCurrentPosition({
-                    lat: latitude,
-                    lng: longitude
-                });
-            });
-        };
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
 
-        updatePosition(); // Initial position update
+  return (
+    <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={currentPosition}
+        zoom={15}
+      >
+        <Marker position={currentPosition} />
+      </GoogleMap>
+    </LoadScript>
+  );
+};
 
-        const intervalId = setInterval(updatePosition, 1000); // Update every 10 seconds
-
-    }, []);
-
-    return (
-        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-            <GoogleMap
-                mapContainerStyle={containerStyle}
-                center={currentPosition}
-                zoom={15}
-            >
-                <Marker position={currentPosition} />
-            </GoogleMap>
-        </LoadScript>
-    )
-}
-
-export default LiveTracking
+export default LiveTracking;
