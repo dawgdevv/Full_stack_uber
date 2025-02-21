@@ -8,8 +8,9 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      "http://localhost:5173",
-      "https://gnpnxv54-5173.inc1.devtunnels.ms/",
+      "http://localhost:5173", // Local development
+      "https://full-stack-uber.vercel.app", // Replace with your Vercel frontend domain
+      "https://uberbackend-7b382822789e.herokuapp.com", // Heroku backend domain
     ],
     methods: ["GET", "POST"],
     credentials: true,
