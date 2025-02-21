@@ -16,7 +16,7 @@ connecToDb();
 const corsOptions = {
   origin: [
     "http://localhost:5173", // Local development
-    "https://your-frontend-domain.vercel.app", // Replace with your Vercel frontend domain
+    "https://full-stack-uber.vercel.app/", // Replace with your Vercel frontend domain
     "https://uberbackend-7b382822789e.herokuapp.com", // Heroku backend domain
   ],
   credentials: true,
