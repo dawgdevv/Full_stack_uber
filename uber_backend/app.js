@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import connecToDb from "./db/db.js";
@@ -9,13 +11,12 @@ import mapRoutes from "./routes/maps.routes.js";
 import rideRoutes from "./routes/ride.routes.js";
 
 const app = express();
-dotenv.config();
+
 connecToDb();
 const corsOptions = {
   origin: [
-    "http://localhost:5173", // Local development
-    "https://full-stack-uber.vercel.app", // Replace with your Vercel frontend domain
-    "https://uberbackend-7b382822789e.herokuapp.com", // Heroku backend domain
+    "http://localhost:5173",
+    "https://gnpnxv54-5173.inc1.devtunnels.ms/",
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
