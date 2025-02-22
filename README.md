@@ -1,24 +1,188 @@
-# Uber-like Application
+# Full Stack Uber-Clone Application
 
-A full-stack ride-hailing application with separate frontend and backend components.
+A comprehensive ride-hailing platform that connects riders with drivers, featuring real-time location tracking, ride management, and secure authentication.
 
-## Project Structure
+## Core Features
+
+### For Riders
+
+- User registration and authentication
+- Real-time ride booking
+- Live driver tracking
+- Ride history
+- Multiple payment methods integration
+- Rate and review drivers
+- Save favorite locations
+- Fare estimation
+- Multiple ride types (Economy, Premium, etc.)
+
+### For Drivers (Captains)
+
+- Driver registration and verification
+- Real-time ride requests
+- Navigation integration
+- Earnings tracking
+- Status management (Online/Offline)
+- Trip history
+- Performance analytics
+- Revenue reports
+
+## Technical Architecture
+
+### Frontend Technology Stack (uber_frontend)
+
+- **Core Framework**: React 18.3
+- **Build Tool**: Vite 6.0
+- **State Management**: Redux Toolkit
+- **Maps Integration**: Google Maps API
+- **Real-time Communication**: Socket.io-client
+- **Styling**:
+  - Tailwind CSS
+  - CSS Modules
+  - Material-UI components
+- **Form Handling**: React Hook Form
+- **API Communication**: Axios
+- **Authentication**: JWT with HTTP-only cookies
+- **Testing**: Jest & React Testing Library
+
+### Backend Technology Stack (uber_backend)
+
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js 4.21
+- **Database**: MongoDB with Mongoose 8.8
+- **Real-time Server**: Socket.io
+- **Authentication**:
+  - JWT (jsonwebtoken)
+  - Passport.js
+- **Security**:
+  - bcrypt for password hashing
+  - helmet for HTTP headers
+  - rate-limiting
+  - CORS protection
+- **Validation**: Joi/Yup
+- **File Upload**: Multer
+- **Payment Processing**: Stripe API
+- **Email Service**: NodeMailer
+- **Testing**: Jest with Supertest
+
+## System Architecture
 
 ```plaintext
-├── uber_frontend/     # React frontend application
-└── uber_backend/      # Express.js backend API
+├── Frontend (React)
+│   ├── Public Routes
+│   │   ├── Landing Page
+│   │   ├── Login/Register
+│   │   └── Fare Estimation
+│   └── Protected Routes
+│       ├── User Dashboard
+│       ├── Booking Interface
+│       ├── Ride Tracking
+│       └── Payment Management
+│
+├── Backend (Express.js)
+│   ├── API Gateway
+│   ├── Authentication Service
+│   ├── Ride Management Service
+│   ├── Payment Service
+│   ├── Location Service
+│   └── Notification Service
+│
+└── External Services
+    ├── MongoDB Database
+    ├── Redis Cache
+    ├── Socket.io Server
+    ├── Payment Gateway
+    └── Maps Service
 ```
 
-## Frontend (uber_frontend)
+## API Services
 
-React application built with Vite
+### Authentication Service
 
-### Frontend Tech Stack
+- Complete JWT-based authentication flow
+- Social login integration (Google, Facebook)
+- Phone number verification
+- Password reset functionality
+- Session management
 
-- React 18.3
-- Vite 6.0
-- ESLint
-- CSS Modules
+### Ride Management Service
+
+- Ride creation and assignment
+- Real-time location updates
+- Fare calculation
+- Route optimization
+- Driver matching algorithm
+
+### Payment Service
+
+- Multiple payment method support
+- Secure payment processing
+- Automatic fare calculation
+- Receipt generation
+- Refund handling
+
+### Location Service
+
+- Real-time location tracking
+- Geofencing
+- Address autocomplete
+- Distance calculation
+- ETA prediction
+
+### Notification Service
+
+- Push notifications
+- Email notifications
+- SMS alerts
+- In-app messaging
+
+## Database Schema
+
+### User Collection
+
+- Basic profile (name, email, phone)
+- Authentication details
+- Payment information
+- Ride history
+- Preferences
+- Ratings
+
+### Captain Collection
+
+- Profile information
+- Vehicle details
+- Documents and verification
+- Performance metrics
+- Earnings history
+- Current status
+
+### Ride Collection
+
+- Ride details
+- Route information
+- Payment status
+- Timestamps
+- User and captain references
+
+### Payment Collection
+
+- Transaction details
+- Payment method
+- Status tracking
+- Refund information
+
+## Security Implementations
+
+- JWT token rotation
+- Rate limiting
+- Request validation
+- SQL injection prevention
+- XSS protection
+- CSRF protection
+- Data encryption
+- Secure password policies
+
+## Development Setup
 
 ### Frontend Installation Steps
 
@@ -45,44 +209,6 @@ npm run dev
 ```bash
 npm run build
 ```
-
-## Backend (uber_backend)
-
-Express.js REST API with MongoDB
-
-### Tech Stack
-
-- Node.js
-- Express.js 4.21
-- MongoDB with Mongoose 8.8
-- JWT Authentication
-- Cookie Parser
-- CORS enabled
-
-### Features
-
-- User authentication (register/login/logout)
-- Captain authentication (register/login/logout)
-- Profile management
-- Token blacklisting
-- Input validation
-- Password hashing
-
-### API Endpoints
-
-#### Users
-
-- POST `/users/register` - Register new user
-- POST `/users/login` - User login
-- GET `/users/profile` - Get user profile
-- GET `/users/logout` - User logout
-
-#### Captains
-
-- POST `/captains/register` - Register new captain
-- POST `/captains/login` - Captain login
-- GET `/captains/profile` - Get captain profile
-- GET `/captains/logout` - Captain logout
 
 ### Backend Installation Steps
 
@@ -112,60 +238,25 @@ JWT_SECRET=your_jwt_secret
 npm run dev
 ```
 
-### Models
+## Performance Optimizations
 
-#### User Model
+- Redis caching
+- Database indexing
+- Load balancing
+- Image optimization
+- Code splitting
+- Lazy loading
+- Service worker implementation
 
-- Fullname (firstname, lastname)
-- Email
-- Password
-- Socket ID
+## Monitoring and Logging
 
-#### Captain Model
+- Error tracking
+- Performance monitoring
+- User analytics
+- Server health checks
+- Automated alerting
 
-- Fullname (firstname, lastname)
-- Email
-- Password
-- Vehicle details (type, color, plate number, capacity)
-- Status (online/offline)
-- Socket ID
-
-#### BlacklistToken Model
-
-- Token
-- Created At (auto-expires after 24h)
-
-## Security Features
-
-- Password hashing with bcrypt
-- JWT authentication
-- Token blacklisting
-- Input validation
-- Protected routes
-- CORS enabled
-- Cookie-based authentication
-
-## Development Workflow
-
-### Frontend Development Setup
-
-```bash
-cd uber_frontend
-npm run dev
-```
-
-### Backend Development Setup
-
-```bash
-cd uber_backend
-npm run dev
-```
-
-## API Reference
-
-Detailed API documentation available in [uber_backend/README.md](uber_backend/README.md)
-
-## Contributing
+## Contributing Guidelines
 
 1. Fork the repository
 1. Create your feature branch
