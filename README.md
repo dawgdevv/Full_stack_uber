@@ -100,9 +100,8 @@ A comprehensive ride-hailing platform that connects riders with drivers, featuri
 ### Authentication Service
 
 - Complete JWT-based authentication flow
-- Social login integration (Google, Facebook)
+- Email password login and register
 - Phone number verification
-- Password reset functionality
 - Session management
 
 ### Ride Management Service
@@ -118,9 +117,7 @@ A comprehensive ride-hailing platform that connects riders with drivers, featuri
 - Multiple payment method support
 - Secure payment processing
 - Automatic fare calculation
-- Receipt generation
-- Refund handling
-
+  
 ### Location Service
 
 - Real-time location tracking
@@ -132,9 +129,7 @@ A comprehensive ride-hailing platform that connects riders with drivers, featuri
 ### Notification Service
 
 - Push notifications
-- Email notifications
-- SMS alerts
-- In-app messaging
+
 
 ## Database Schema
 
@@ -152,8 +147,6 @@ A comprehensive ride-hailing platform that connects riders with drivers, featuri
 - Profile information
 - Vehicle details
 - Documents and verification
-- Performance metrics
-- Earnings history
 - Current status
 
 ### Ride Collection
@@ -174,11 +167,7 @@ A comprehensive ride-hailing platform that connects riders with drivers, featuri
 ## Security Implementations
 
 - JWT token rotation
-- Rate limiting
 - Request validation
-- SQL injection prevention
-- XSS protection
-- CSRF protection
 - Data encryption
 - Secure password policies
 
@@ -237,24 +226,6 @@ JWT_SECRET=your_jwt_secret
 ```bash
 npm run dev
 ```
-
-## Performance Optimizations
-
-- Redis caching
-- Database indexing
-- Load balancing
-- Image optimization
-- Code splitting
-- Lazy loading
-- Service worker implementation
-
-## Monitoring and Logging
-
-- Error tracking
-- Performance monitoring
-- User analytics
-- Server health checks
-- Automated alerting
 
 ## Contributing Guidelines
 
